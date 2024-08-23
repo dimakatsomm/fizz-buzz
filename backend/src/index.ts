@@ -20,7 +20,6 @@ app.use('/swagger', serve, setup(swaggerDoc));
 app.use(middleware({ apiSpec: swaggerDoc as OpenAPIV3.Document }));
 app.use('/users', usersRouter);
 
-
 app.listen(C.PORT, () => {
   console.log(`Server running on PORT: ${C.PORT}`);
 });
