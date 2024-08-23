@@ -1,0 +1,309 @@
+openapi: 3.0.3
+info:
+  title: User Service
+  version: 1.0.0
+  description: Service for managing users.
+  contact:
+    name: Dimakatso
+    email: dimakatsomm@icloud.com
+servers:
+  - url: /
+    description: Self
+  - url: http://localhost:3000
+    description: Local
+paths:
+  /users:
+    get:
+      tags:
+        - user
+      summary: List all users
+      description: Get the list all users
+      parameters:
+        - in: query
+          name: search
+          schema:
+            type: string
+          description: Search term for users
+      responses:
+        '200':
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/UserList'
+        '400':
+          description: Bad Request.
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/GenericResponseDto'
+        '500':
+          description: Internal Server Error.
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/GenericResponseDto'
+    post:
+      tags:
+        - user
+      summary: Create new user
+      description: Create new user
+      requestBody:
+        description: New user details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserDto'
+      responses:
+        '200':
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '400':
+          description: Bad Request.
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/GenericResponseDto'
+        '500':
+          description: Internal Server Error.
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/GenericResponseDto'
+  /users/{id}:
+    get:
+      tags:
+        - user
+      summary: Get a user
+      description: Get a user
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: User Id
+      responses:
+        '200':
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/User'
+        '400':
+          description: Bad Request.
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/GenericResponseDto'
+        '404':
+          description: Not Found.
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/GenericResponseDto'
+        '500':
+          description: Internal Server Error.
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/GenericResponseDto'
+    patch:
+      tags:
+        - user
+      summary: Update existing user
+      description: Update existing user
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: User Id
+      requestBody:
+        description: Update user details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserDto'
+      responses:
+        '200':
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/GenericResponseDto'
+        '400':
+          description: Bad Request.
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/GenericResponseDto'
+        '404':
+          description: Not Found.
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/GenericResponseDto'
+        '500':
+          description: Internal Server Error.
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/GenericResponseDto'
+    delete:
+      tags:
+        - user
+      summary: Delete existing user
+      description: Delete existing user
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: User Id
+        - in: query
+          name: softDelete
+          schema:
+            type: boolean
+            default: true
+          description: Determines a soft delete
+      responses:
+        '200':
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/User'
+        '400':
+          description: Bad Request.
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/GenericResponseDto'
+        '404':
+          description: Not Found.
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/GenericResponseDto'
+        '500':
+          description: Internal Server Error.
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/GenericResponseDto'
+
+components:
+  schemas:
+    #requestBodies
+    CreateUserDto:
+      type: object
+      description: Create user data object
+      required:
+        - name
+        - surname
+      properties:
+        name:
+          type: string
+          description: The name of the user.
+        surname:
+          type: string
+          description: The surname of the user.
+        email:
+          type: string
+          description: The email of the user
+      example:
+        name: "John"
+        surname: "Doe"
+        email: "john.doe@gmail.com"
+    UpdateUserDto:
+      type: object
+      description: Update user data object
+      properties:
+        name:
+          type: string
+          description: The name of the user.
+        surname:
+          type: string
+          description: The surname of the user.
+        email:
+          type: string
+          description: The email of the user
+      example:
+        name: "John"
+        surname: "Doe"
+        email: "john.doe@gmail.com"
+    #responseBodies
+    GenericResponseDto:
+      type: object
+      description: Successful operation
+      required:
+        - success
+      properties:
+        success:
+          type: boolean
+          description: Indicates success of request
+        error:
+          type: string
+          description: Error message
+    User:
+      type: object
+      description: Represents an user
+      properties:
+        id:
+          type: string
+          description: The unique identifier of the user.
+        name:
+          type: string
+          description: The name of the user.
+        surname:
+          type: string
+          description: The surname of the user.
+        email:
+          type: string
+          description: The email of the user
+      example:
+        id: "094ca14f-0767-4160-ae64-b4e6c9fd542a"
+        name: "John"
+        surname: "Doe"
+        email: "john.doe@gmail.com"
+    UserList:
+      type: object
+      description: User list
+      required:
+        - data
+        - meta
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+        meta:
+          type: object
+          properties:
+            total:
+              type: number
