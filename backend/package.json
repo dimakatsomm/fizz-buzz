@@ -8,10 +8,13 @@
     "start": "node './dist/index.js'",
     "dev": "nodemon",
     "build": "tsc",
-    "watch:build": "tsc --watch",
-    "watch:server": "nodemon '../dist/index.js' --watch '../dist'",
+    "build:watch": "tsc --watch",
+    "start:watch": "nodemon '../dist/index.js' --watch '../dist'",
     "lint": "eslint . --ext .ts",
-    "lint:fix": "eslint . --ext .ts --fix"
+    "lint:fix": "npm run lint -- --fix",
+    "db:migration:generate": "npx typeorm-ts-node-esm migration:generate -- -d src/database/data-source.ts -p",
+    "db:migration:run": "npx typeorm-ts-node-esm migration:run -d src/database/data-source.ts ",
+    "db:migration: revert": "npx typeorm-ts-node-esm migration:revert -d src/database/data-source.ts "
   },
   "keywords": [],
   "author": "Dimakatso Makgatho <dimakatsomm@icloud.com>",
@@ -25,9 +28,11 @@
     "js-yaml": "^4.1.0",
     "jsonwebtoken": "^9.0.2",
     "moment": "^2.30.1",
+    "pg": "^8.12.0",
     "reflect-metadata": "^0.2.1",
     "swagger-ui-express": "^5.0.0",
     "typedi": "^0.10.0",
+    "typeorm": "^0.3.20",
     "validator": "^13.11.0"
   },
   "devDependencies": {
