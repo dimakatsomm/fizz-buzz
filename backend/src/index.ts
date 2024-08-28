@@ -9,6 +9,7 @@ import { OpenAPIV3 } from 'express-openapi-validator/dist/framework/types';
 
 import * as C from './constants';
 import usersRouter from './routes/users.route';
+import { AppDataSource } from './database/data-source';
 
 const app = express();
 
@@ -20,6 +21,15 @@ app.use('/swagger', serve, setup(swaggerDoc));
 app.use(middleware({ apiSpec: swaggerDoc as OpenAPIV3.Document }));
 app.use('/users', usersRouter);
 
+AppDataSource.initialize()
+  .then(() => {
+    console.log(`Database running on PORT: ${C.POSTGRES_PORT}`);
+  })
+  .catch((e: any) => {
+    console.error('Database connection error: ', e);
+  });
+
 app.listen(C.PORT, () => {
-  console.log(`Server running on PORT: ${C.PORT}`);
-});
+    console.log(`Server running on PORT: ${C.PORT}`);
+  });
+  
