@@ -1,309 +1,167 @@
-openapi: 3.0.3
+
+openapi: 3.0.0
 info:
-  title: User Service
+  title: User Management API
   version: 1.0.0
-  description: Service for managing users.
-  contact:
-    name: Dimakatso
-    email: dimakatsomm@icloud.com
-servers:
-  - url: /
-    description: Self
-  - url: http://localhost:3000
-    description: Local
 paths:
   /users:
     get:
-      tags:
-        - user
-      summary: List all users
-      description: Get the list all users
+      summary: Get a list of users
       parameters:
         - in: query
           name: search
           schema:
             type: string
-          description: Search term for users
+          description: Search term to filter users by name, surname, or email.
+        - in: query
+          name: deleted
+          schema:
+            type: boolean
+          description: Include soft-deleted users in the response.
+        - in: query
+          name: sort
+          schema:
+            type: string
+          description: Sort users by fieldName:order (e.g., 'name:ASC', 'surname:DESC').
       responses:
         '200':
-          description: Successful operation.
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: '#/components/schemas/UserList'
-        '400':
-          description: Bad Request.
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: '#/components/schemas/GenericResponseDto'
-        '500':
-          description: Internal Server Error.
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: '#/components/schemas/GenericResponseDto'
-    post:
-      tags:
-        - user
-      summary: Create new user
-      description: Create new user
-      requestBody:
-        description: New user details
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateUserDto'
-      responses:
-        '200':
-          description: Successful operation.
+          description: A JSON array of user objects
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/User'
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    name:
+                      type: string
+                    surname:
+                      type: string
+                    email:
+                      type: string
+                    deleted:
+                      type: boolean
         '400':
-          description: Bad Request.
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: '#/components/schemas/GenericResponseDto'
-        '500':
-          description: Internal Server Error.
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: '#/components/schemas/GenericResponseDto'
-  /users/{id}:
-    get:
-      tags:
-        - user
-      summary: Get a user
-      description: Get a user
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: string
-          required: true
-          description: User Id
-      responses:
-        '200':
-          description: Successful operation.
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: '#/components/schemas/User'
-        '400':
-          description: Bad Request.
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: '#/components/schemas/GenericResponseDto'
+          description: Invalid query parameters
         '404':
-          description: Not Found.
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: '#/components/schemas/GenericResponseDto'
-        '500':
-          description: Internal Server Error.
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: '#/components/schemas/GenericResponseDto'
-    patch:
-      tags:
-        - user
-      summary: Update existing user
-      description: Update existing user
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: string
-          required: true
-          description: User Id
+          description: No users found
+    post:
+      summary: Create a new user
       requestBody:
-        description: Update user details
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateUserDto'
+              type: object
+              properties:
+                name:
+                  type: string
+                surname:
+                  type: string
+                email:
+                  type: string
       responses:
-        '200':
-          description: Successful operation.
+        '201':
+          description: User created successfully
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/GenericResponseDto'
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  surname:
+                    type: string
+                  email:
+                    type: string
         '400':
-          description: Bad Request.
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: '#/components/schemas/GenericResponseDto'
-        '404':
-          description: Not Found.
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: '#/components/schemas/GenericResponseDto'
-        '500':
-          description: Internal Server Error.
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: '#/components/schemas/GenericResponseDto'
-    delete:
-      tags:
-        - user
-      summary: Delete existing user
-      description: Delete existing user
+          description: Invalid request body
+  /users/{id}:
+    get:
+      summary: Get a user by ID
       parameters:
         - in: path
           name: id
+          required: true
           schema:
             type: string
-          required: true
-          description: User Id
-        - in: query
-          name: softDelete
-          schema:
-            type: boolean
-            default: true
-          description: Determines a soft delete
       responses:
         '200':
-          description: Successful operation.
+          description: A user object
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/User'
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  surname:
+                    type: string
+                  email:
+                    type: string
+                  deleted:
+                    type: boolean
         '400':
-          description: Bad Request.
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: '#/components/schemas/GenericResponseDto'
+          description: Invalid ID format
         '404':
-          description: Not Found.
+          description: User not found
+    put:
+      summary: Update a user by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                surname:
+                  type: string
+                email:
+                  type: string
+      responses:
+        '200':
+          description: User updated successfully
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/GenericResponseDto'
-        '500':
-          description: Internal Server Error.
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: '#/components/schemas/GenericResponseDto'
-
-components:
-  schemas:
-    #requestBodies
-    CreateUserDto:
-      type: object
-      description: Create user data object
-      required:
-        - name
-        - surname
-      properties:
-        name:
-          type: string
-          description: The name of the user.
-        surname:
-          type: string
-          description: The surname of the user.
-        email:
-          type: string
-          description: The email of the user
-      example:
-        name: "John"
-        surname: "Doe"
-        email: "john.doe@gmail.com"
-    UpdateUserDto:
-      type: object
-      description: Update user data object
-      properties:
-        name:
-          type: string
-          description: The name of the user.
-        surname:
-          type: string
-          description: The surname of the user.
-        email:
-          type: string
-          description: The email of the user
-      example:
-        name: "John"
-        surname: "Doe"
-        email: "john.doe@gmail.com"
-    #responseBodies
-    GenericResponseDto:
-      type: object
-      description: Successful operation
-      required:
-        - success
-      properties:
-        success:
-          type: boolean
-          description: Indicates success of request
-        error:
-          type: string
-          description: Error message
-    User:
-      type: object
-      description: Represents an user
-      properties:
-        id:
-          type: string
-          description: The unique identifier of the user.
-        name:
-          type: string
-          description: The name of the user.
-        surname:
-          type: string
-          description: The surname of the user.
-        email:
-          type: string
-          description: The email of the user
-      example:
-        id: "094ca14f-0767-4160-ae64-b4e6c9fd542a"
-        name: "John"
-        surname: "Doe"
-        email: "john.doe@gmail.com"
-    UserList:
-      type: object
-      description: User list
-      required:
-        - data
-        - meta
-      properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/User'
-        meta:
-          type: object
-          properties:
-            total:
-              type: number
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  surname:
+                    type: string
+                  email:
+                    type: string
+        '400':
+          description: Invalid request body or ID format
+        '404':
+          description: User not found
+    delete:
+      summary: Soft delete a user by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: User deleted successfully
+        '400':
+          description: Invalid ID format
+        '404':
+          description: User not found

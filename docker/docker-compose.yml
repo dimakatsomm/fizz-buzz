@@ -1,3 +1,4 @@
+
 version: '3'
 services:
   fizz_buzz_db:
@@ -14,11 +15,13 @@ services:
       - POSTGRES_HOST=${POSTGRES_HOST}
     ports:
       - ${POSTGRES_EXTERNAL_PORT}:${POSTGRES_PORT}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
   fizz_buzz_backend:
     container_name: fizz-buzz-backend
     build: 
       context: ../backend
-      network: host
     restart: always
     env_file:
       - ../backend/.env
@@ -26,8 +29,23 @@ services:
     environment:
       - PORT=8000
     ports:
-      - ${PORT}:8000
+      - 3000:8000
     depends_on:
       - fizz_buzz_db
     working_dir: /app
-    command: watch    
+    command: npm run start:watch
+
+  fizz_buzz_frontend:
+    container_name: fizz-buzz-frontend
+    build: 
+      context: ../frontend
+    restart: always
+    ports:
+      - 8080:8080
+    depends_on:
+      - fizz_buzz_backend
+    working_dir: /app
+    command: npm run serve
+
+volumes:
+  pgdata:

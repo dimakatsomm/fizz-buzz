@@ -21,14 +21,15 @@ app.use('/swagger', serve, setup(swaggerDoc));
 app.use(middleware({ apiSpec: swaggerDoc as OpenAPIV3.Document }));
 app.use('/users', usersRouter);
 
-app.listen(C.PORT, () => {
-  console.log(`Server running on PORT: ${C.PORT}`);
-});
-
 AppDataSource.initialize()
   .then(() => {
     console.log(`Database running on PORT: ${C.POSTGRES_PORT}`);
   })
-  .catch((e) => {
+  .catch((e: any) => {
     console.error('Database connection error: ', e);
   });
+
+app.listen(C.PORT, () => {
+    console.log(`Server running on PORT: ${C.PORT}`);
+  });
+  
