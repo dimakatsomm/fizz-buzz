@@ -95,6 +95,7 @@
 import { ref, onMounted, computed } from "vue";
 import EditUser from "./EditUser.vue";
 import CreateUser from "./CreateUser.vue";
+import { API_BASE_URL } from "@/constants";
 
 interface User {
   id: string;
@@ -118,7 +119,7 @@ export default {
     const fetchUsers = () => {
       const sort = `${sortField.value}:${order.value}`;
       fetch(
-        `http://localhost:3000/users?search=${searchTerm.value}&deleted=${includeDeleted.value}&sort=${sort}`
+        `${API_BASE_URL}/users?search=${searchTerm.value}&deleted=${includeDeleted.value}&sort=${sort}`
       )
         .then((response) => response.json())
         .then((data) => {
@@ -137,7 +138,7 @@ export default {
     };
 
     const deleteUser = (id: string) => {
-      fetch(`http://localhost:3000/users/${id}`, {
+      fetch(`${API_BASE_URL}/users/${id}`, {
         method: "DELETE",
       }).then(() => {
         fetchUsers();

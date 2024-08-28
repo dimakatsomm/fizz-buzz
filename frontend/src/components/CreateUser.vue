@@ -30,6 +30,7 @@
 </template>
 
 <script lang="ts">
+import { API_BASE_URL } from "@/constants";
 import { defineComponent, ref } from "vue";
 
 interface User {
@@ -44,7 +45,7 @@ export default defineComponent({
     const user = ref<User>({ name: "", surname: "", email: "" });
 
     const createUser = () => {
-      fetch("http://localhost:3000/users", {
+      fetch(`${API_BASE_URL}/users`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
